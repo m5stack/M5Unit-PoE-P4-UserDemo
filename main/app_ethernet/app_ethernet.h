@@ -6,6 +6,7 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "ethernet_init.h"
+#include "string.h"
 
 void app_ethernet_init(void);
 void app_ethernet_deinit(void);

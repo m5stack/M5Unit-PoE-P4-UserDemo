@@ -8,6 +8,11 @@ This is a web control interface project based on M5Stack Unit PoE P4, developed 
 
 The system implements real-time bidirectional communication through WebSocket protocol, supporting LED color control, hardware button counting synchronization, and GPIO pin mode and level control functions.
 
+## IDF Build
+
+### Tool Chains
+
+[ESP-IDF  v5.4.2 ](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32p4/index.html)
 
 ## Related Link
 
