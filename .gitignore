@@ -45,6 +45,7 @@ managed_components/
 # VSCode
 .vscode/
 .cache/
+.devcontainer/
 
 # Python virtual environment
 .venv/
@@ -59,3 +60,6 @@ bin/
 obj/
 
 *.code-workspace
+dependencies.lock
+README.md.aa
+.gitignore.aa

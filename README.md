@@ -2,21 +2,24 @@
 
 ## Overview
 
-### SKU:xxx
+### SKU:U213
 
-Description of the product
+This is a web control interface project based on M5Stack Unit PoE P4, developed using the ESP-IDF framework, implementing remote control and monitoring functions. The project provides a web-based user interface that allows users to control various functions of the device through the network, including RGB LED, button counter, and GPIO pin control.
+
+The system implements real-time bidirectional communication through WebSocket protocol, supporting LED color control, hardware button counting synchronization, and GPIO pin mode and level control functions.
+
 
 ## Related Link
 
-- [Document & Datasheet](https://docs.m5stack.com/en/unit/product_Link)
+- [Document & Datasheet](https://docs.m5stack.com/en/unit/unit-poe-p4)
 
 ## Required Libraries:
 
-- [Adafruit_BMP280_Library](https://github.com/adafruit/Required_Libraries_Link)
+- [esp-protocols/components/mdns at master · espressif/esp-protocols](https://github.com/espressif/esp-protocols/tree/master/components/mdns)
 
 ## License
 
-- [Product Name- MIT](LICENSE)
+- [M5Unit PoE-P4- MIT](LICENSE)
 
 ## Remaining steps(Editorial Staff Look,After following the steps, remember to delete all the content below)
 
@@ -46,3 +49,4 @@ Contains M5Stack-**UNIT ENV** series related case programs.ENV is an environment
 
 - [M5Unit-ENV - MIT](LICENSE)
 ```
+

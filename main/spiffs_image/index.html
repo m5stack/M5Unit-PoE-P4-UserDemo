@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M5Stack Unit PoE-P4 Control Page</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preload" href="/images/SDIO_Area.png" as="image">
+    <link rel="preload" href="/images/Grove_Area.png" as="image">
+    <link rel="preload" href="/images/PIN_Area.png" as="image">
+</head>
+
+<body>
+    <h1>Unit PoE P4 Control Panel</h1>
+
+    <div class="container">
+        <!-- Card 1: LED & Button Combined -->
+        <div class="card card-control">
+            <h2>LED & Button Control</h2>
+
+            <!-- LED Section -->
+            <div class="control-section led-section">
+                <div class="led" id="led"></div>
+                <div class="color-picker-wrapper">
+                    <label>RGB Color</label>
+                    <input type="color" id="colorPicker" value="#73bbff">
+                </div>
+            </div>
+
+            <!-- Button Counter Section -->
+            <div class="control-section button-section">
+                <div class="button-icon">
+                    <svg width="80" height="80" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="#5c6bc0" stroke="#3f51b5" stroke-width="3" />
+                        <circle cx="50" cy="50" r="30" fill="#7986cb" stroke="#5c6bc0" stroke-width="2" />
+                    </svg>
+                </div>
+                <div class="counter-wrapper">
+                    <label>Button Counter</label>
+                    <div class="counter-value" id="counter">0</div>
+                    <button onclick="resetCounter()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: GPIO Control -->
+        <div class="card card-gpio">
+            <h2>GPIO Control</h2>
+            <div class="gpio-container">
+                <!-- GPIO Group 1: SDIO/ISP (6 pins on left) -->
+                <div class="gpio-group gpio-group-sdio">
+                    <div class="gpio-col-left">
+                        <div class="gpio-pin-item left" data-gpio="13">
+                            <span class="gpio-mode" id="mode-13">(INPUT)</span>
+                            <div class="gpio-circle" data-id="13"></div>
+                        </div>
+                        <div class="gpio-pin-item left" data-gpio="12">
+                            <span class="gpio-mode" id="mode-12">(INPUT)</span>
+                            <div class="gpio-circle" data-id="12"></div>
+                        </div>
+                        <div class="gpio-pin-item left" data-gpio="11">
+                            <span class="gpio-mode" id="mode-11">(INPUT)</span>
+                            <div class="gpio-circle" data-id="11"></div>
+                        </div>
+                        <div class="gpio-pin-item left" data-gpio="10">
+                            <span class="gpio-mode" id="mode-10">(INPUT)</span>
+                            <div class="gpio-circle" data-id="10"></div>
+                        </div>
+                        <div class="gpio-pin-item left" data-gpio="9">
+                            <span class="gpio-mode" id="mode-9">(INPUT)</span>
+                            <div class="gpio-circle" data-id="9"></div>
+                        </div>
+                        <div class="gpio-pin-item left" data-gpio="8">
+                            <span class="gpio-mode" id="mode-8">(INPUT)</span>
+                            <div class="gpio-circle" data-id="8"></div>
+                        </div>
+                    </div>
+                    <img src="/images/SDIO_Area.png" alt="SDIO/ISP Group" class="gpio-bg-image">
+                </div>
+
+                <!-- GPIO Group 2: Main GPIO (3 left + 8 right) -->
+                <div class="gpio-group gpio-group-main">
+                    <div class="gpio-col-left">
+                        <div class="gpio-pin-item left" data-gpio="21">
+                            <span class="gpio-mode" id="mode-21">(INPUT)</span>
+                            <div class="gpio-circle" data-id="21"></div>
+                        </div>
+                        <div class="gpio-pin-item left" data-gpio="20">
+                            <span class="gpio-mode" id="mode-20">(INPUT)</span>
+                            <div class="gpio-circle" data-id="20"></div>
+                        </div>
+                        <div class="gpio-pin-item left" data-gpio="19">
+                            <span class="gpio-mode" id="mode-19">(INPUT)</span>
+                            <div class="gpio-circle" data-id="19"></div>
+                        </div>
+                    </div>
+                    <img src="/images/PIN_Area.png" alt="Main GPIO Group" class="gpio-bg-image">
+                    <div class="gpio-col-right">
+                        <div class="gpio-pin-item right" data-gpio="44">
+                            <div class="gpio-circle" data-id="44"></div>
+                            <span class="gpio-mode" id="mode-44">(INPUT)</span>
+                        </div>
+                        <div class="gpio-pin-item right" data-gpio="43">
+                            <div class="gpio-circle" data-id="43"></div>
+                            <span class="gpio-mode" id="mode-43">(INPUT)</span>
+                        </div>
+                        <div class="gpio-pin-item right" data-gpio="42">
+                            <div class="gpio-circle" data-id="42"></div>
+                            <span class="gpio-mode" id="mode-42">(INPUT)</span>
+                        </div>
+                        <div class="gpio-pin-item right" data-gpio="41">
+                            <div class="gpio-circle" data-id="41"></div>
+                            <span class="gpio-mode" id="mode-41">(INPUT)</span>
+                        </div>
+                        <div class="gpio-pin-item right" data-gpio="40">
+                            <div class="gpio-circle" data-id="40"></div>
+                            <span class="gpio-mode" id="mode-40">(INPUT)</span>
+                        </div>
+                        <div class="gpio-pin-item right" data-gpio="39">
+                            <div class="gpio-circle" data-id="39"></div>
+                            <span class="gpio-mode" id="mode-39">(INPUT)</span>
+                        </div>
+                        <div class="gpio-pin-item right" data-gpio="23">
+                            <div class="gpio-circle" data-id="23"></div>
+                            <span class="gpio-mode" id="mode-23">(INPUT)</span>
+                        </div>
+                        <div class="gpio-pin-item right" data-gpio="22">
+                            <div class="gpio-circle" data-id="22"></div>
+                            <span class="gpio-mode" id="mode-22">(INPUT)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GPIO Group 3: Grove (2 pins on right) -->
+                <div class="gpio-group gpio-group-grove">
+                    <img src="/images/Grove_Area.png" alt="Grove Group" class="gpio-bg-image">
+                    <div class="gpio-col-right">
+                        <div class="gpio-pin-item right" data-gpio="53">
+                            <div class="gpio-circle" data-id="53"></div>
+                            <span class="gpio-mode" id="mode-53">(INPUT)</span>
+                        </div>
+                        <div class="gpio-pin-item right" data-gpio="54">
+                            <div class="gpio-circle" data-id="54"></div>
+                            <span class="gpio-mode" id="mode-54">(INPUT)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GPIO Modal -->
+    <div id="gpioModal" class="gpio-modal">
+        <div class="gpio-modal-content">
+            <h3 id="modalTitle">GPIO Control</h3>
+            <div id="modalOptions"></div>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+
+</html>
