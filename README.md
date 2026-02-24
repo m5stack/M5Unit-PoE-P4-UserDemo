@@ -6,7 +6,7 @@
 
 This is a web control interface project based on M5Stack Unit PoE P4, developed using the ESP-IDF framework, implementing remote control and monitoring functions. The project provides a web-based user interface that allows users to control various functions of the device through the network, including RGB LED, button counter, and GPIO pin control.
 
-The system implements real-time bidirectional communication through WebSocket protocol, supporting LED color control, hardware button counting synchronization, and GPIO pin mode and level control functions.
+The system implements real-time bidirectional communication through WebSocket protocol, supporting LED color control, hardware button counting synchronization, aGPIO pin mode and level control functions.
 
 ## IDF Build, Flash, Run
 
@@ -60,7 +60,7 @@ First, make sure that the computer or mobile phone you are using is on the same 
 
 ## Related Link
 
-- [Document & Datasheet](https://docs.m5stack.com/en/unit/unit-poe-p4)
+- [Document & Datasheet](https://docs.m5stack.com/en/products/sku/U213)
 
 ## Required Libraries:
 
@@ -68,4 +68,5 @@ First, make sure that the computer or mobile phone you are using is on the same 
 
 ## License
 
-- [M5Unit PoE-P4- MIT](LICENSE)
+- [M5Unit PoE-P4 - MIT](LICENSE)
+
