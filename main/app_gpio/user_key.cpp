@@ -45,7 +45,7 @@ static void IRAM_ATTR key_isr_handler(void *arg)
     } else {
         int64_t press_duration = now_ms - press_time_ms;
         if (press_duration > 0 && press_duration < LONG_PRESS_LIMIT) {
-            counter++;
+            counter = counter + 1;
         }
     }
 }
@@ -72,13 +72,12 @@ void reset_key_counter(void)
  */
 void user_key_init(void)
 {
-    gpio_config_t io_conf = {
-        .pin_bit_mask = 1ULL << USR_KEY_GPIO,
-        .mode         = GPIO_MODE_INPUT,
-        .pull_up_en   = GPIO_PULLUP_ENABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type    = GPIO_INTR_ANYEDGE  // 双边沿检测
-    };
+    gpio_config_t io_conf = {};
+    io_conf.pin_bit_mask  = 1ULL << USR_KEY_GPIO;
+    io_conf.mode          = GPIO_MODE_INPUT;
+    io_conf.pull_up_en    = GPIO_PULLUP_ENABLE;
+    io_conf.pull_down_en  = GPIO_PULLDOWN_DISABLE;
+    io_conf.intr_type     = GPIO_INTR_ANYEDGE;
     gpio_config(&io_conf);
     gpio_install_isr_service(0);
     gpio_isr_handler_add(USR_KEY_GPIO, key_isr_handler, NULL);

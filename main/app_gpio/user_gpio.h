@@ -1,5 +1,5 @@
 #ifndef USER_GPIO_H_
-#define USER_GPIO_H__
+#define USER_GPIO_H_
 
 #include "driver/gpio.h"
 

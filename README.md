@@ -2,28 +2,39 @@
 
 ## Overview
 
-### SKU:U213
+### Unit PoE-P4 and Unit PoE-P4X
 
-This is a web control interface project based on M5Stack Unit PoE P4, developed using the ESP-IDF framework, implementing remote control and monitoring functions. The project provides a web-based user interface that allows users to control various functions of the device through the network, including RGB LED, button counter, and GPIO pin control.
+This is a web control interface project for M5Stack Unit PoE-P4 (SKU: U213) and Unit PoE-P4X, developed using the ESP-IDF framework. The project provides a web-based user interface that allows users to control various functions of the device through the network, including RGB LED, button counter, and GPIO pin control.
 
 The system implements real-time bidirectional communication through WebSocket protocol, supporting LED color control, hardware button counting synchronization, aGPIO pin mode and level control functions.
 
 ## IDF Build, Flash, Run
 
-### Tool Chains
+### Unit PoE-P4X
 
-[ESP-IDF  v5.4.2 ](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32p4/index.html)
+Unit PoE-P4X uses the ESP32-P4 rev 3.x silicon family and requires [ESP-IDF v6.1 or newer](https://docs.espressif.com/projects/esp-idf/en/v6.1/esp32p4/index.html). The ESP-IDF target remains `esp32p4`; `sdkconfig.p4x.defaults` selects the rev 3.x family. ESP32-P4 revisions below 3.0 and revisions 3.0 or newer are mutually incompatible.
 
-### Build
+Build with an activated ESP-IDF 6.1 environment:
 
+```powershell
+idf.py -B build.p4x -D SDKCONFIG=sdkconfig.p4x -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.p4x.defaults" build
 ```
+
+Flash and monitor the P4X build:
+
+```powershell
+idf.py -B build.p4x -D SDKCONFIG=sdkconfig.p4x -p PORT flash monitor
+```
+
+The P4X profile uses the mDNS hostname `poe-p4x.local` and prints `POE_P4X_DEMO_READY` after the HTTP/WebSocket server starts.
+
+### Unit PoE-P4 (legacy)
+
+The original Unit PoE-P4 build remains on [ESP-IDF v5.4.2](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32p4/index.html):
+
+```powershell
 idf.py build
-```
-
-### Flash
-
-```
-idf.py -p PORT flash
+idf.py -p PORT flash monitor
 ```
 
 ### Run
@@ -55,7 +66,7 @@ I (7431) MDNS: mdns hostname set to: poe-p4
 
 First, make sure that the computer or mobile phone you are using is on the same local area network (LAN) as the Ethernet connection. There are two methods:
 
-1. Directly enter `poe-p4.local` in the browser to access the webpage.
+1. Enter `poe-p4.local` for Unit PoE-P4 or `poe-p4x.local` for Unit PoE-P4X.
 2. Copy the IP address printed in the serial monitor and paste it into the browser to open the webpage.
 
 ## Related Link

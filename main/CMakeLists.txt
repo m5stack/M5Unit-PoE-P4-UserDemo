@@ -20,8 +20,8 @@ set(PRIVATEREQUES
     ethernet_init
 )
 set(REQUIRES
-    json
-    driver
+    esp_driver_gpio
+    esp_driver_ledc
     nvs_flash
     esp_http_server
     esp_timer

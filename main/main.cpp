@@ -19,7 +19,15 @@
 extern "C" {
 #endif
 
-#define HOST_NAME "poe-p4"
+#ifdef CONFIG_EXAMPLE_POE_P4X
+#define HOST_NAME     "poe-p4x"
+#define INSTANCE_NAME "Unit PoE-P4X Device"
+#define READY_MARKER  "POE_P4X_DEMO_READY"
+#else
+#define HOST_NAME     "poe-p4"
+#define INSTANCE_NAME "Unit PoE-P4 Device"
+#define READY_MARKER  "POE_P4_DEMO_READY"
+#endif
 
 static const char *TAG = "main";
 uint32_t g_ip_addr     = 0;
@@ -35,7 +43,6 @@ uint32_t g_ip_addr     = 0;
  */
 static void initialise_mdns(const char *hostname)
 {
-    char *instance_name = "Unit PoE-P4 Device";
     // init service of mDNS
     esp_err_t err = mdns_init();
     if (err) {
@@ -44,9 +51,9 @@ static void initialise_mdns(const char *hostname)
     }
     ESP_ERROR_CHECK(mdns_hostname_set(hostname));
     ESP_LOGI("MDNS", "mdns hostname set to: %s", hostname);
-    ESP_ERROR_CHECK(mdns_instance_name_set(instance_name));
-    ESP_ERROR_CHECK(mdns_service_add(instance_name, "_http", "_tcp", 80, NULL, 0));
-    ESP_ERROR_CHECK(mdns_service_subtype_add_for_host(instance_name, "_http", "_tcp", NULL, "_server"));
+    ESP_ERROR_CHECK(mdns_instance_name_set(INSTANCE_NAME));
+    ESP_ERROR_CHECK(mdns_service_add(INSTANCE_NAME, "_http", "_tcp", 80, NULL, 0));
+    ESP_ERROR_CHECK(mdns_service_subtype_add_for_host(INSTANCE_NAME, "_http", "_tcp", NULL, "_server"));
 }
 
 /**
@@ -121,7 +128,9 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_event_loop_delete_default());
 #endif  // EXAMPLE_ETH_DEINIT_AFTER_S > 0
 
-    start_webserver();  // start HTTP server and WebSocket
+    if (start_webserver() != NULL) {  // start HTTP server and WebSocket
+        ESP_LOGI(TAG, "%s", READY_MARKER);
+    }
 }
 
 #ifdef __cplusplus

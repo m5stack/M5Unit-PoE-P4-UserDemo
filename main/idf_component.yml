@@ -16,3 +16,4 @@ dependencies:
   #   public: true
 
   espressif/mdns: ^1.9.1
+  espressif/cjson: ^1.7.19
