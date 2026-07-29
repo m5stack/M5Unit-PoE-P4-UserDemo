@@ -13,6 +13,27 @@ static int ws_fds[MAX_WS_CLIENTS] = {-1, -1, -1, -1, -1, -1, -1, -1};  // fd lis
 
 static void ws_broadcast_state(void);
 
+static httpd_ws_frame_t make_text_frame(const char *payload)
+{
+    httpd_ws_frame_t frame = {};
+    frame.final            = true;
+    frame.type             = HTTPD_WS_TYPE_TEXT;
+    frame.payload          = (uint8_t *)payload;
+    frame.len              = strlen(payload);
+    return frame;
+}
+
+static httpd_uri_t make_get_uri(const char *uri, esp_err_t (*handler)(httpd_req_t *), bool is_websocket = false)
+{
+    httpd_uri_t config  = {};
+    config.uri          = uri;
+    config.method       = HTTP_GET;
+    config.handler      = handler;
+    config.user_ctx     = NULL;
+    config.is_websocket = is_websocket;
+    return config;
+}
+
 /**
  * @brief Converts a hex color string to RGB values
  * @param hex Hex color string (e.g., "#RRGGBB" or "RRGGBB")
@@ -170,11 +191,7 @@ static void ws_broadcast_state(void)
     ESP_LOGI(TAG, "Broadcast: %s", msg);
     for (int i = 0; i < MAX_WS_CLIENTS; i++) {
         if (ws_fds[i] != -1) {
-            httpd_ws_frame_t frame = {.final      = true,
-                                      .fragmented = false,
-                                      .type       = HTTPD_WS_TYPE_TEXT,
-                                      .payload    = (uint8_t *)msg,
-                                      .len        = strlen(msg)};
+            httpd_ws_frame_t frame = make_text_frame(msg);
             esp_err_t err          = httpd_ws_send_frame_async(server, ws_fds[i], &frame);
             if (err != ESP_OK) ESP_LOGE(TAG, "fd[%d] ws_fds[%d] WebSocket send failed: %d", i, ws_fds[i], err);
         }
@@ -206,8 +223,7 @@ static void broadcast_gpio_update(int id, const char *mode, int level)
     // broadcast to all connected clients
     for (int i = 0; i < MAX_WS_CLIENTS; i++) {
         if (ws_fds[i] >= 0) {
-            httpd_ws_frame_t ws_pkt = {
-                .type = HTTPD_WS_TYPE_TEXT, .payload = (uint8_t *)json_str, .len = strlen(json_str)};
+            httpd_ws_frame_t ws_pkt = make_text_frame(json_str);
             httpd_ws_send_frame_async(server, ws_fds[i], &ws_pkt);
         }
     }
@@ -245,7 +261,7 @@ static void send_all_gpio_status(int fd)
     cJSON_AddItemToObject(root, "gpios", gpios);
     char *json_str = cJSON_PrintUnformatted(root);
 
-    httpd_ws_frame_t ws_pkt = {.type = HTTPD_WS_TYPE_TEXT, .payload = (uint8_t *)json_str, .len = strlen(json_str)};
+    httpd_ws_frame_t ws_pkt = make_text_frame(json_str);
     httpd_ws_send_frame_async(server, fd, &ws_pkt);
 
     free(json_str);
@@ -312,7 +328,7 @@ esp_err_t websocket_handler(httpd_req_t *req)
         return ESP_OK;
     }
 
-    httpd_ws_frame_t ws_pkt = {0};
+    httpd_ws_frame_t ws_pkt = {};
 
     esp_err_t ret = httpd_ws_recv_frame(req, &ws_pkt, 0);
     if (ret != ESP_OK) {
@@ -368,7 +384,7 @@ esp_err_t websocket_handler(httpd_req_t *req)
                 } else if (strcmp(type->valuestring, "get_counter") == 0) {
                     char buf[64];
                     snprintf(buf, sizeof(buf), "{\"type\":\"counter_update\",\"counter\":%d}", counter_value);
-                    httpd_ws_frame_t resp = {.type = HTTPD_WS_TYPE_TEXT, .payload = (uint8_t *)buf, .len = strlen(buf)};
+                    httpd_ws_frame_t resp = make_text_frame(buf);
                     ESP_LOGI(TAG, "WS get_counter: %s", buf);
                     httpd_ws_send_frame(req, &resp);
 
@@ -383,8 +399,7 @@ esp_err_t websocket_handler(httpd_req_t *req)
                     char json[80];
                     snprintf(json, sizeof(json), "{\"type\":\"status\",\"color\":\"#%s\",\"counter\":%d}", led_color,
                              counter_value);
-                    httpd_ws_frame_t resp = {
-                        .type = HTTPD_WS_TYPE_TEXT, .payload = (uint8_t *)json, .len = strlen(json)};
+                    httpd_ws_frame_t resp = make_text_frame(json);
                     httpd_ws_send_frame(req, &resp);
                 }
                 /* GPIO_CONTROL */
@@ -438,9 +453,7 @@ esp_err_t websocket_handler(httpd_req_t *req)
                                     cJSON_AddStringToObject(err_root, "message", "Cannot set level in input mode");
 
                                     char *err_json            = cJSON_PrintUnformatted(err_root);
-                                    httpd_ws_frame_t err_resp = {.type    = HTTPD_WS_TYPE_TEXT,
-                                                                 .payload = (uint8_t *)err_json,
-                                                                 .len     = strlen(err_json)};
+                                    httpd_ws_frame_t err_resp = make_text_frame(err_json);
                                     httpd_ws_send_frame(req, &err_resp);
 
                                     free(err_json);
@@ -530,37 +543,31 @@ httpd_handle_t start_webserver(void)
 
     if (httpd_start(&server, &config) == ESP_OK) {
         // WebSocket
-        httpd_uri_t uri_ws = {
-            .uri = "/ws", .method = HTTP_GET, .handler = websocket_handler, .user_ctx = NULL, .is_websocket = true};
+        httpd_uri_t uri_ws = make_get_uri("/ws", websocket_handler, true);
         httpd_register_uri_handler(server, &uri_ws);
 
-        httpd_uri_t uri_root = {.uri = "/", .method = HTTP_GET, .handler = index_handler, .user_ctx = NULL};
+        httpd_uri_t uri_root = make_get_uri("/", index_handler);
         httpd_register_uri_handler(server, &uri_root);
 
-        httpd_uri_t uri_css = {.uri = "/style.css", .method = HTTP_GET, .handler = css_handler, .user_ctx = NULL};
+        httpd_uri_t uri_css = make_get_uri("/style.css", css_handler);
         httpd_register_uri_handler(server, &uri_css);
 
-        httpd_uri_t uri_js = {.uri = "/script.js", .method = HTTP_GET, .handler = js_handler, .user_ctx = NULL};
+        httpd_uri_t uri_js = make_get_uri("/script.js", js_handler);
         httpd_register_uri_handler(server, &uri_js);
 
-        httpd_uri_t uri_m5image = {
-            .uri = "/images/M5Stack_logo_name.png", .method = HTTP_GET, .handler = m5image_handler, .user_ctx = NULL};
+        httpd_uri_t uri_m5image = make_get_uri("/images/M5Stack_logo_name.png", m5image_handler);
         httpd_register_uri_handler(server, &uri_m5image);
 
-        httpd_uri_t uri_sdioimage = {
-            .uri = "/images/SDIO_Area.png", .method = HTTP_GET, .handler = sdioimage_handler, .user_ctx = NULL};
+        httpd_uri_t uri_sdioimage = make_get_uri("/images/SDIO_Area.png", sdioimage_handler);
         httpd_register_uri_handler(server, &uri_sdioimage);
 
-        httpd_uri_t uri_groveimage = {
-            .uri = "/images/Grove_Area.png", .method = HTTP_GET, .handler = groveimage_handler, .user_ctx = NULL};
+        httpd_uri_t uri_groveimage = make_get_uri("/images/Grove_Area.png", groveimage_handler);
         httpd_register_uri_handler(server, &uri_groveimage);
 
-        httpd_uri_t uri_pinimage = {
-            .uri = "/images/PIN_Area.png", .method = HTTP_GET, .handler = pinimage_handler, .user_ctx = NULL};
+        httpd_uri_t uri_pinimage = make_get_uri("/images/PIN_Area.png", pinimage_handler);
         httpd_register_uri_handler(server, &uri_pinimage);
 
-        httpd_uri_t uri_favicon = {
-            .uri = "/images/favicon.ico", .method = HTTP_GET, .handler = favicon_get_handler, .user_ctx = NULL};
+        httpd_uri_t uri_favicon = make_get_uri("/images/favicon.ico", favicon_get_handler);
         httpd_register_uri_handler(server, &uri_favicon);
 
         xTaskCreate(gpio_status_update_task, "gpio_status_update_task", 1024 * 4, NULL, 5, NULL);

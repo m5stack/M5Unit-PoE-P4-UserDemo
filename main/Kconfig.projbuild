@@ -1,4 +1,11 @@
 menu "Example Configuration"
+    config EXAMPLE_POE_P4X
+        bool "Build for Unit PoE-P4X"
+        default n
+        help
+            Select the Unit PoE-P4X product identity. PoE-P4X uses the ESP32-P4
+            rev 3.x silicon family and requires ESP-IDF 6.1 or newer.
+
     config EXAMPLE_ETH_DEINIT_AFTER_S
         int "Stop and deinit Ethernet after elapsing number of secs"
         range -1 300
