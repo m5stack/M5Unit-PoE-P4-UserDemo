@@ -1,8 +1,5 @@
 name: clang-format Check
 
-env:
-  INCLUDE_REGEX: ^.*\.((((c|C)(c|pp|xx|\+\+)?$)|((h|H)h?(pp|xx|\+\+)?$))|(inl|ino|pde|proto|cu))$
-
 on:
   push:
     tags-ignore:
@@ -11,57 +8,47 @@ on:
     branches:
       - '*'
     paths:
-      - '*'
-      - '**.ino'
-      - '**.cpp'
-      - '**.hpp'
-      - '**.h'
-      - '**.c'
-      - '**.inl'
-      - '**clang-format-check.yml'
-      - '**.clang-format'
+      - '**/*.c'
+      - '**/*.cc'
+      - '**/*.cpp'
+      - '**/*.cxx'
+      - '**/*.h'
+      - '**/*.hh'
+      - '**/*.hpp'
+      - '**/*.hxx'
+      - '**/*.inl'
+      - '**/*.ino'
+      - '.clang-format'
+      - '.github/workflows/clang-format-check.yml'
   pull_request:
     paths:
-      - '**.ino'
-      - '**.cpp'
-      - '**.hpp'
-      - '**.h'
-      - '**.c'
-      - '**.inl'
-      - '**clang-format-check.yml'
-      - '**.clang-format'
+      - '**/*.c'
+      - '**/*.cc'
+      - '**/*.cpp'
+      - '**/*.cxx'
+      - '**/*.h'
+      - '**/*.hh'
+      - '**/*.hpp'
+      - '**/*.hxx'
+      - '**/*.inl'
+      - '**/*.ino'
+      - '.clang-format'
+      - '.github/workflows/clang-format-check.yml'
   workflow_dispatch:
 
 jobs:
   formatting-check:
     name: Formatting Check
-    runs-on: [self-hosted, Linux, X64]
-    strategy:
-      matrix:
-        path:
-          - check: 'main/app_ethernet'
-            exclude: ''
-          - check: 'main/app_gpio'
-            exclude: ''
-          - check: 'main/app_led'
-            exclude: ''
-          - check: 'main/app_webserver'
-            exclude: ''
-          - check: 'main/spiffs_image'
-            exclude: ''
-          - check: 'main'
-            exclude: ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Run clang-format style check for C/C++/Protobuf programs.
-        uses: jidicula/clang-format-action@v4.10.2 # Using include-regex 10.x or later
+      - name: Check C/C++ formatting
+        uses: jidicula/clang-format-action@v4.18.0
         with:
-          clang-format-version: '13'
-          check-path: ${{ matrix.path['check'] }}
-          exclude-regex: ${{ matrix.path['exclude'] }}
-          include-regex: ${{ env.INCLUDE_REGEX }}
+          clang-format-version: '21'
+          check-path: .

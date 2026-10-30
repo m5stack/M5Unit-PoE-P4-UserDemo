@@ -10,32 +10,55 @@ The system implements real-time bidirectional communication through WebSocket pr
 
 ## IDF Build, Flash, Run
 
+### Requirements
+
+- ESP-IDF v6.0.3
+- Target: ESP32-P4 (`esp32p4`)
+- Toolchain: riscv32-esp-elf (installed with ESP-IDF v6.0.3)
+
+Both product profiles are built with ESP-IDF **v6.0.3** (target `esp32p4`) and are selected with the `PRODUCT` CMake variable. Variant settings live in
+`sdkconfig.defaults.p4` / `sdkconfig.defaults.p4x`, and each profile keeps its own
+`sdkconfig.p4` / `sdkconfig.p4x`. ESP32-P4 revisions below 3.0 and revisions 3.0 or newer are
+mutually incompatible, so build the profile that matches your hardware.
+
 ### Unit PoE-P4X
 
-Unit PoE-P4X uses the ESP32-P4 rev 3.x silicon family and requires [ESP-IDF v6.1 or newer](https://docs.espressif.com/projects/esp-idf/en/v6.1/esp32p4/index.html). The ESP-IDF target remains `esp32p4`; `sdkconfig.p4x.defaults` selects the rev 3.x family. ESP32-P4 revisions below 3.0 and revisions 3.0 or newer are mutually incompatible.
-
-Build with an activated ESP-IDF 6.1 environment:
+Build:
 
 ```powershell
-idf.py -B build.p4x -D SDKCONFIG=sdkconfig.p4x -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.p4x.defaults" build
+idf.py -B build_p4x -DPRODUCT=p4x build
 ```
 
-Flash and monitor the P4X build:
+Flash and monitor:
 
 ```powershell
-idf.py -B build.p4x -D SDKCONFIG=sdkconfig.p4x -p PORT flash monitor
+idf.py -B build_p4x -DPRODUCT=p4x -p PORT flash monitor
 ```
 
 The P4X profile uses the mDNS hostname `poe-p4x.local` and prints `POE_P4X_DEMO_READY` after the HTTP/WebSocket server starts.
 
-### Unit PoE-P4 (legacy)
+### Unit PoE-P4
 
-The original Unit PoE-P4 build remains on [ESP-IDF v5.4.2](https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32p4/index.html):
+Build:
 
 ```powershell
-idf.py build
-idf.py -p PORT flash monitor
+idf.py -B build_p4 -DPRODUCT=p4 build
 ```
+
+Flash and monitor:
+
+```powershell
+idf.py -B build_p4 -DPRODUCT=p4 -p PORT flash monitor
+```
+
+### Notes
+
+- Always keep `-B` and `-DPRODUCT` together. `idf.py flash` without `-B` flashes the default
+  `build/` directory, which may contain the other profile's firmware.
+- Do not share one build directory between the two profiles.
+- `sdkconfig.<profile>` is generated from the defaults on the first build; delete it to re-apply
+  changed defaults.
+- The IDE Build button runs `idf.py -B build build`, i.e. the default profile (`p4`, `build/`).
 
 ### Run
 
@@ -75,7 +98,9 @@ First, make sure that the computer or mobile phone you are using is on the same 
 
 ## Required Libraries:
 
-- [mdns](https://github.com/espressif/esp-protocols/tree/master/components/mdns)
+- [mdns 1.14.1](https://github.com/espressif/esp-protocols/tree/master/components/mdns)
+- [cjson 1.7.19~2](https://github.com/espressif/idf-extra-components/tree/master/cjson)
+- [ip101 1.1.0](https://github.com/espressif/esp-eth-drivers/tree/master/ip101)
 
 ## License
 

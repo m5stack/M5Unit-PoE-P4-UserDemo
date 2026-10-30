@@ -1,0 +1,31 @@
+# =============================================================================
+# 产品变体：Unit PoE-P4X（ESP32-P4 rev >= 3.0）
+#
+# 构建：idf.py -B build_p4x -DPRODUCT=p4x build
+#
+# 与 P4 的差异只有下面几类（芯片 revision 决定）：
+#   - revision 开关
+#   - CPU 主频上限
+#   - PSRAM 速度上限
+#   - 产品标识 CONFIG_EXAMPLE_POE_P4X
+# =============================================================================
+
+CONFIG_IDF_TARGET="esp32p4"
+
+# 40 MHz 晶振（两个产品一致）
+CONFIG_XTAL_FREQ_40=y
+
+# 芯片 revision >= v3.0（与 rev<3.0 互斥）
+# CONFIG_ESP32P4_SELECTS_REV_LESS_V3 is not set
+CONFIG_ESP32P4_REV_MIN_300=y
+
+# rev >= 3.0：CPU 400 MHz
+# 外部 PSRAM：启用 + 200 MHz（沿用旧固件已验证的配置）
+# 部分板子的 PSRAM 颗粒支持 250M，可改成 CONFIG_SPIRAM_SPEED_250M=y；
+# 如果改 250M 后出现启动崩溃/反复重启，说明颗粒只支持 200M，改回本行。
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_400=y
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_SPEED_200M=y
+
+# 产品标识：P4X
+CONFIG_EXAMPLE_POE_P4X=y

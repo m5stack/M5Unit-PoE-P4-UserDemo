@@ -38,6 +38,8 @@
 build*/
 cmake-build-*/
 managed_components/
+sdkconfig.p4
+sdkconfig.p4.old
 sdkconfig.p4x
 sdkconfig.p4x.old
 sdkconfig.p4-legacy
@@ -67,3 +69,4 @@ obj/
 dependencies.lock
 README.md.aa
 .gitignore.aa
+firmware
